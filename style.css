@@ -1,0 +1,58 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#first_screen {
+    /* display: none; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#second_screen {
+    /* display: flex; */
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+#game_screen {
+    /* display: flex; */
+    display: none;
+    align-items: flex-start;
+}
+
+.player_columns {
+    display: flex;
+}
+
+.player_column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.player_info {
+    text-align: center;
+}
+
+#player_one_info {
+    border: 1px solid yellow;
+}
+
+td {
+    width: 100px;
+    height: 100px;
+    background-color: lightgray;
+    text-align: center;
+}
