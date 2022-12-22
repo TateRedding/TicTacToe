@@ -17,20 +17,20 @@
             </div>
         </section>
         <section id="second_screen">
-            <div class="player_columns">
-                <div class="player_column">
+            <div class="game_options_columns">
+                <div class="game_options_column">
                     <h2>Player 1</h2>
                     <h3>Enter your name</h3>
                     <input type="text" id="player_one_name_input">
                     <button id="player_one_name_button">Enter</button>
                 </div>
-                <div class="player_column" id="player_two_column">
+                <div class="game_options_column" id="player_two_column">
                     <h2>Player 2</h2>
                     <h3>Enter your name</h3>
                     <input type="text" id="player_two_name_input">
                     <button id="player_two_name_button">Enter</button>
                 </div>
-                <div class="player_column" id="computer_column">
+                <div class="game_options_column" id="computer_column">
                     <h2>Computer</h2>
                     <h3>Select Difficulty</h3>
                     <select id="difficulty_selection">
@@ -38,31 +38,30 @@
                         <option value="normal">Normal</option>
                     </select>
                 </div>
+                <div class="game_options_column">
+                    <h2>Game Grid</h2>
+                    <h3>Select Grid Size</h3>
+                    <select id="grid_size_selection">
+                        <option value="3">3 x 3</option>
+                        <option value="4">4 x 4</option>
+                        <option value="5">5 x 5</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <div id="custom_grid_div">
+                        <p>Max: 9</p>
+                        <input type="number" maxlength="2" id="custom_grid_input">
+                        <button id="custom_grid_button">Enter</button>
+                    </div>
+                </div>
             </div>
             <button id="start_game" disabled>Start</button>
         </section>
         <section id="game_screen">
-            <div class="player_info">
+            <div class="player_info current_turn_display">
                 <h3 id="player_one_name">Player Name</h3>
                 <h3 class="letter">X</h3>
             </div>
-            <table id="game_grid">
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
+            <table id="game_grid"></table>
             <div class="player_info">
                 <h3 id="player_two_name">Player Name</h3>
                 <h3 class="letter">O</h3>

@@ -32,11 +32,11 @@ body {
     align-items: flex-start;
 }
 
-.player_columns {
+.game_options_columns {
     display: flex;
 }
 
-.player_column {
+.game_options_column {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -46,8 +46,15 @@ body {
     text-align: center;
 }
 
-#player_one_info {
+.current_turn_display {
     border: 1px solid yellow;
+}
+
+#custom_grid_div {
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 td {
