@@ -14,8 +14,10 @@ const state = {
     ],
     gridSize: 3,
     board: [],
+    winningLines: [],
     currentTurn: '',
     activeLetter: 'X',
+    totalMoves: 0,
     gameOver: false
 };
 
@@ -119,6 +121,7 @@ customGridButton.addEventListener("click", () => {
 
 startGameButton.addEventListener("click", () => {
     createGrid();
+    createWinningLinesArrays();
     secondScreen.style.display = "none";
     playerOneNameDisplay.innerText = state.players[0].name;
     playerTwoNameDisplay.innerText = state.players[1].name;
@@ -137,11 +140,9 @@ gameGrid.addEventListener("click", (event) => {
         const col = Array.from(event.target.parentNode.children).indexOf(event.target);
         event.target.innerText = state.activeLetter;
         state.board[row][col] = state.activeLetter;
+        state.totalMoves++;
 
-        winCheck();
-        fullBoardCheck();
-
-        if (!state.gameOver) {
+        if (!isGameWon() && !isBoardFull()) {
             switchPlayers();
         };
     };
@@ -167,7 +168,57 @@ const switchPlayers = () => {
     state.activeLetter === 'X' ? state.activeLetter = 'O' : state.activeLetter = 'X';
     state.currentTurn === state.players[0].name ? state.currentTurn = state.players[1].name : state.currentTurn = state.players[0].name;
     gameStatusDisplay.innerText = `It's ${state.currentTurn}'s turn!`;
+    if (state.currentTurn === state.players[1].name && !state.players[1].isHuman) {
+        computerTurn();
+    };
 };
+
+const isGameWon = () => {
+    for (let i = 0; i < state.winningLines.length; i++) {
+        if (isAllTheSame(state.winningLines[i])) {
+            triggerWin(state.winningLines[i]);
+            return true;
+        };
+    };
+    return false;
+};
+
+const isAllTheSame = (arr) => {
+    const first = state.board[arr[0][0]][arr[0][1]];
+    if (first === null) {
+        return false;
+    };
+    for (let i = 1; i < arr.length; i++) {
+        currResult = state.board[arr[i][0]][arr[i][1]];
+        if (currResult === null || currResult !== first) {
+            return false;
+        };
+    };
+    return true;
+};
+
+const triggerWin = (arr) => {
+    state.gameOver = true;
+    gameStatusDisplay.innerText = `${state.currentTurn} wins!`
+    for (let i = 0; i < arr.length; i++) {
+        currChild = gameGrid.children[arr[i][0]].children[arr[i][1]];
+        currChild.style.fontWeight = "bold";
+        currChild.style.color = "red";
+    };
+};
+
+const isBoardFull = () => {
+    if (state.totalMoves >= state.gridSize * state.gridSize) {
+        state.gameOver = true;
+        gameStatusDisplay.innerText = `Game over! No one wins!`;
+        playerInfoDivs[0].classList.remove("current_turn_display");
+        playerInfoDivs[1].classList.remove("current_turn_display");
+        return true;
+    };
+    return false;
+};
+
+// --- INITIALIZING THE GAME ---
 
 const createGrid = () => {
     for (let i = 0; i < state.gridSize; i++) {
@@ -183,115 +234,155 @@ const createGrid = () => {
     };
 };
 
-const winCheck = () => {
+const createWinningLinesArrays = () => {
+    const leftToRight = [];
+    const rightToLeft = [];
     for (let i = 0; i < state.gridSize; i++) {
-        if (isAllTheSame(getRow(i))) {
-            triggerWin(state.currentTurn, getRow(i));
-            return;
+        const currRow = [];
+        const currCol = [];
+        for (let j = 0; j < state.gridSize; j++) {
+            currRow.push([i, j]);
+            currCol.push([j, i]);
         };
-        if (isAllTheSame(getColumn(i))) {
-            triggerWin(state.currentTurn, getColumn(i));
-            return;
-        };
+        leftToRight.push([i, i]);
+        rightToLeft.push([i, state.gridSize-(i+1)]);
+        state.winningLines.push(currRow);
+        state.winningLines.push(currCol);
     };
-    if (isAllTheSame(getLtoRDiagonal())) {
-        triggerWin(state.currentTurn, getLtoRDiagonal());
+    state.winningLines.push(leftToRight);
+    state.winningLines.push(rightToLeft);
+};
+
+// --- COMPUTER OPPONENT AI ---
+
+const computerTurn = () => {
+    const possibleMoves = getAllPossibleMoves();
+    const winningMove = getWinningMove(possibleMoves);
+    if (winningMove !== null) {
+        makeMove(winningMove);
         return;
     };
-    if (isAllTheSame(getRtoLDiagonal())) {
-        triggerWin(state.currentTurn, getRtoLDiagonal());
-        return;
+    if (state.players[1].difficulty !== "easy") {
+        const blockingMove = getBlockingMove(possibleMoves);
+        if (blockingMove !== null) {
+            makeMove(blockingMove);
+            return;
+        };
+        if (state.players[1].difficulty === "hard") {
+            const goodMoves = getGoodMoves(possibleMoves);
+            if (goodMoves.length > 0) {
+                makeMove(getRandomMove(goodMoves));
+                return;
+            };
+        };
     };
+    makeMove(getRandomMove(possibleMoves));
+
+
 };
 
-const getRow = (num) => {
-    let result = [];
-    for (let i = 0; i < state.gridSize; i++) {
-        result.push([num, i]);
+const getAllPossibleMoves = () => {
+    const moves = [];
+    for (let i = 0; i < state.board.length; i++) {
+        for(let j = 0; j < state.board[i].length; j++) {
+            if (state.board[i][j] === null) {
+                moves.push([i, j]);
+            };
+        };
     };
-    return result;
+    return moves;
+
 };
 
-const getColumn = (num) => {
-    let result = [];
-    for (let i = 0; i < state.gridSize; i++) {
-        result.push([i, num]);
+const getWinningMove = (moves) => {
+    for (let i = 0; i < moves.length; i++) {
+        for (let j = 0; j < state.winningLines.length; j++) {
+            if (isInLine(moves[i], state.winningLines[j]) && doesMoveWin(moves[i], state.winningLines[j])) {
+                return moves[i];
+            };
+        };
     };
-    return result;
+    return null;
 };
 
-const getLtoRDiagonal = () => {
-    let result = [];
-    for (let i = 0; i < state.gridSize; i++) {
-        result.push([i, i]);
-    };
-    return result;
-};
-
-const getRtoLDiagonal = () => {
-    let result = [];
-    for (let i = 0; i < state.gridSize; i++) {
-        result.push([i, state.gridSize-(i+1)]);
-    };
-    return result;
-};
-
-const isAllTheSame = (arr) => {
-    if (state.board[arr[0][0]][arr[0][1]] === null) {
-        return false;
-    };
-    const first = state.board[arr[0][0]][arr[0][1]];
-    for (let i = 1; i < arr.length; i++) {
-        currResult = state.board[arr[i][0]][arr[i][1]];
-        if (currResult === null || currResult !== first) {
+const doesMoveWin = (coord, lineArr) => {
+    for (let i = 0; i < lineArr.length; i++) {
+        if (coord[0] === lineArr[i][0] && coord[1] === lineArr[i][1]) {
+            continue;
+        };
+        if (state.board[lineArr[i][0]][lineArr[i][1]] !== 'O') {
             return false;
         };
     };
     return true;
 };
 
-const triggerWin = (player, arr) => {
-    state.gameOver = true;
-    gameStatusDisplay.innerText = `${state.currentTurn} wins!`
-    for (let i = 0; i < arr.length; i++) {
-        currChild = gameGrid.children[arr[i][0]].children[arr[i][1]];
-        currChild.style.fontWeight = "bold";
-        currChild.style.color = "red";
-    };
-};
-
-const fullBoardCheck = () => {
-    if (state.gameOver) {
-        return;
-    };
-    for (let i = 0; i < state.gridSize; i++) {
-        for (let j = 0; j < state.gridSize; j++) {
-            if (state.board[i][j] === null) {
-                return;
+const getBlockingMove = (moves) => {
+    for (let i = 0; i < moves.length; i++) {
+        for (let j = 0; j < state.winningLines.length; j++) {
+            if (isInLine(moves[i], state.winningLines[j]) && doesMoveBlock(moves[i], state.winningLines[j])) {
+                return moves[i];
             };
         };
     };
-
-    state.gameOver = true;
-    gameStatusDisplay.innerText = `Game over! No one wins!`;
-
+    return null;
 };
 
-// Is there possibly a simpler soplution to full board check? Maybe keep track of how many times a td has been altered,
-// and check if its ever equal to gridsize squared
+const doesMoveBlock = (coord, lineArr) => {
+    for (let i = 0; i < lineArr.length; i++) {
+        if (coord[0] === lineArr[i][0] && coord[1] === lineArr[i][1]) {
+            continue;
+        };
+        if (state.board[lineArr[i][0]][lineArr[i][1]] !== 'X') {
+            return false;
+        };
+    };
+    return true;
+};
 
-// Would there be a better way to format winCheck/ full borardCheck so that they return booleans
-// in an effort for cleaner code in the gamegrid event listener
+const getGoodMoves = (moves) => {
+    const goodMoves = [];
+    for (let i = 0; i < moves.length; i++) {
+        for (let j = 0; j < state.winningLines.length; j++) {
+            if (isInLine(moves[i], state.winningLines[j]) && isMoveGood(state.winningLines[j])) {
+                goodMoves.push(moves[i]);
+            };
+        };
+    };
+    return goodMoves;
+};
 
-// AI
-// in grid event listener, should check if player 2 is computer and on turn, if so, return out of function
-//get all possible moves
-//get all winning moves
+const isMoveGood = (lineArr) => {
+    for (let i = 0; i < lineArr.length; i++) {
+        currResult = state.board[lineArr[i][0]][lineArr[i][1]];
+        if (currResult === 'X') {
+            return false;
+        } else if (currResult !== null) {
+            return true;
+        };
+    };
+    return false;
+};
 
-// easy looks for a win, then picks at random
+const isInLine = (coord, lineArr) => {
+    for (let i = 0; i < lineArr.length; i++) {
+        if (coord[0] === lineArr[i][0] && coord[1] === lineArr[i][1]) {
+            return true;
+        };
+    };
+    return false;
+};
 
-//medium will look for a win, then try to block me, then move at random
+const getRandomMove = (moves) => {
+    const index = Math.floor(Math.random() * moves.length);
+    return moves[index];
+};
 
-// hard will look for a win, then try to block, then try to make best move to put itself in a winning position (something that puts a second O in a row/ only one more move to win)
-
-// extra hard, which i wont do, wuld look several steps ahead, trying to strategize best way to create a position of two possible win moves in one turn
+const makeMove = (coord) => {
+    state.board[coord[0]][coord[1]] = 'O';
+    gameGrid.children[coord[0]].children[coord[1]].innerText = 'O';
+    state.totalMoves++;
+    if (!isGameWon() && !isBoardFull()) {
+        switchPlayers();
+    };
+};
