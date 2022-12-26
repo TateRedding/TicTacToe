@@ -4,71 +4,80 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Andika&display=swap" rel="stylesheet">
         <script src="app.js" defer></script>
         <title>Tic-Tac-Toe</title>
     </head>
     <body>
-        <h1>Tic-Tac-Toe</h1>
-        <h2 id="game_status"></h2>
-        <section id="first_screen">
-            <h2>Choose an option:</h2>
-            <div>
-                <button id="vs_human">vs. Human</button>
-                <button id="vs_computer">vs. Computer</button>
-            </div>
-        </section>
-        <section id="second_screen">
-            <div class="game_options_columns">
-                <div class="game_options_column">
-                    <h2>Player 1</h2>
-                    <h3>Enter your name</h3>
-                    <input type="text" id="player_one_name_input">
-                    <button id="player_one_name_button">Enter</button>
+        <header>
+            <h1>Tic-Tac-Toe</h1>
+        </header>
+        <main>
+            <section id="first_screen">
+                <h2>Choose an option:</h2>
+                <div>
+                    <button id="vs_human">vs. Human</button>
+                    <button id="vs_computer">vs. Computer</button>
                 </div>
-                <div class="game_options_column" id="player_two_column">
-                    <h2>Player 2</h2>
-                    <h3>Enter your name</h3>
-                    <input type="text" id="player_two_name_input">
-                    <button id="player_two_name_button">Enter</button>
-                </div>
-                <div class="game_options_column" id="computer_column">
-                    <h2>Computer</h2>
-                    <h3>Select Difficulty</h3>
-                    <select id="difficulty_selection">
-                        <option value="easy">Easy</option>
-                        <option value="normal">Normal</option>
-                        <option value="hard">Hard</option>
-                    </select>
-                </div>
-                <div class="game_options_column">
-                    <h2>Game Grid</h2>
-                    <h3>Select Grid Size</h3>
-                    <select id="grid_size_selection">
-                        <option value="3">3 x 3</option>
-                        <option value="4">4 x 4</option>
-                        <option value="5">5 x 5</option>
-                        <option value="custom">Custom</option>
-                    </select>
-                    <div id="custom_grid_div">
-                        <p>Max: 9</p>
-                        <input type="number" maxlength="2" id="custom_grid_input">
-                        <button id="custom_grid_button">Enter</button>
+            </section>
+            <section id="second_screen">
+                <div class="game_options_columns">
+                    <div class="game_options_column">
+                        <h2>Player 1</h2>
+                        <h3>Enter your name</h3>
+                        <input type="text" id="player_one_name_input">
+                        <button id="player_one_name_button">Enter</button>
+                    </div>
+                    <div class="game_options_column" id="player_two_column">
+                        <h2>Player 2</h2>
+                        <h3>Enter your name</h3>
+                        <input type="text" id="player_two_name_input">
+                        <button id="player_two_name_button">Enter</button>
+                    </div>
+                    <div class="game_options_column" id="computer_column">
+                        <h2>Computer</h2>
+                        <h3>Select Difficulty</h3>
+                        <select id="difficulty_selection">
+                            <option value="easy">Easy</option>
+                            <option value="normal">Normal</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="game_options_column">
+                        <h2>Game Grid</h2>
+                        <h3>Select Grid Size</h3>
+                        <select id="grid_size_selection">
+                            <option value="3">3 x 3</option>
+                            <option value="4">4 x 4</option>
+                            <option value="5">5 x 5</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <div id="custom_grid_div">
+                            <p>Max: 9</p>
+                            <input type="number" maxlength="2" id="custom_grid_input">
+                            <button id="custom_grid_button">Enter</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <button id="start_game" disabled>Start</button>
-        </section>
-        <section id="game_screen">
-            <div class="player_info current_turn_display">
-                <h3 id="player_one_name">Player Name</h3>
-                <h3 class="letter">X</h3>
-            </div>
-            <table id="game_grid"></table>
-            <div class="player_info">
-                <h3 id="player_two_name">Player Name</h3>
-                <h3 class="letter">O</h3>
-            </div>
-        </section>
-
+                <button id="start_game" disabled>Start</button>
+            </section>
+            <section id="game_screen">
+                <h2 id="game_status"></h2>
+                <div class="game_display">
+                    <div class="player_info current_turn_display">
+                        <h3 id="player_one_name">Player Name</h3>
+                        <h3 class="letter">X</h3>
+                    </div>
+                    <table id="game_grid"></table>
+                    <div class="player_info">
+                        <h3 id="player_two_name">Player Name</h3>
+                        <h3 class="letter">O</h3>
+                    </div>
+                </div>
+            </section>
+            <section class="bottom buffer"></section>
+        </main>
     </body>
 </html>

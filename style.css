@@ -2,52 +2,91 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: "Andika", Arial, Helvetica, sans-serif;
 }
 
-body {
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 70px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: #2b4353;
+}
+
+h1 {
+    font-size: 2.5em;
+    letter-spacing: .1em;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #9cd3d3;
     height: 100vh;
 }
 
-#first_screen {
-    /* display: none; */
+button {
+    background-color: #e8630a;
+    padding: .25em .5em;
+    margin-top: .5em;
+    font-size: 1em;
+}
+
+td {
+    width: 100px;
+    height: 100px;
+    background-color: lightgray;
+    text-align: center;
+    font-size: 3em;
+}
+
+.game_options_columns, .game_display {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#second_screen {
-    /* display: flex; */
-    display: none;
-    flex-direction: column;
-    align-items: center;
-}
-
-#game_screen {
-    /* display: flex; */
-    display: none;
     align-items: flex-start;
-}
-
-.game_options_columns {
-    display: flex;
 }
 
 .game_options_column {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0 1em;
 }
 
 .player_info {
+    box-sizing: content-box;
     text-align: center;
+    width: 8em;
+    background-color: #b6e1e0;
+    margin: 2px;
 }
 
 .current_turn_display {
-    border: 1px solid yellow;
+    border: 2px solid yellow;
+    margin: 0;
+}
+
+#first_screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#second_screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+#game_screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
 }
 
 #custom_grid_div {
@@ -57,9 +96,6 @@ body {
     align-items: center;
 }
 
-td {
-    width: 100px;
-    height: 100px;
-    background-color: lightgray;
-    text-align: center;
+#game_grid {
+    margin: 0 2em;
 }
