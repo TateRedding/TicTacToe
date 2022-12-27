@@ -11,9 +11,10 @@ header {
     left: 0;
     width: 100vw;
     height: 70px;
-    display: flex;
+    text-align: center;
+    /* display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
     background-color: #2b4353;
 }
 
@@ -25,7 +26,6 @@ h1 {
 main {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
     align-items: center;
     background-color: #9cd3d3;
     height: 100vh;
@@ -39,11 +39,11 @@ button {
 }
 
 td {
-    width: 100px;
-    height: 100px;
+    /* width: 100px;
+    height: 100px; */
     background-color: lightgray;
     text-align: center;
-    font-size: 3em;
+    /* font-size: 3em; */
 }
 
 .game_options_columns, .game_display {
@@ -73,20 +73,16 @@ td {
 
 #first_screen {
     display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
-#second_screen {
+#second_screen, #game_screen {
     display: none;
-    flex-direction: column;
-    align-items: center;
 }
 
-#game_screen {
-    display: none;
+#first_screen, #second_screen, #game_screen {
     flex-direction: column;
     align-items: center;
+    margin-top: max(70px, 15vh);
 }
 
 #custom_grid_div {
@@ -98,4 +94,30 @@ td {
 
 #game_grid {
     margin: 0 2em;
+}
+
+#reset_options {
+    display: none;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+@media (max-width: 540px) {
+    .player_info {
+        display: none;
+    }
+
+    .game_options_columns {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #game_grid {
+        margin: 0;
+    }
+
+    #reset_options {
+        flex-direction: column;
+    }
 }

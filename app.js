@@ -1,25 +1,5 @@
 // STATE
-const state = {
-    players: [
-        {
-            name: "",
-            onTurn: true,
-        },
-        {
-            name: "",
-            onTurn: false,
-            isHuman: false,
-            difficulty: "easy"
-        }
-    ],
-    gridSize: 3,
-    board: [],
-    winningLines: [],
-    currentTurn: '',
-    activeLetter: 'X',
-    totalMoves: 0,
-    gameOver: false
-};
+const state = {};
 
 // DOM SELCTORS
 const firstScreen = document.getElementById("first_screen");
@@ -54,6 +34,11 @@ const difficultySelection = document.getElementById("difficulty_selection");
 const gridSizeSelection = document.getElementById("grid_size_selection");
 
 const gameGrid = document.getElementById("game_grid");
+
+const resetOptionsDiv = document.getElementById("reset_options");
+// need functionality
+const resetSameOptionsButton = document.getElementById("reset_same_options");
+const fullResetButton = document.getElementById("full_reset");
 
 // EVENT LISTENERS
 
@@ -148,6 +133,40 @@ gameGrid.addEventListener("click", (event) => {
     };
 });
 
+fullResetButton.addEventListener("click", () => {
+    resetState();
+    resetOptionsDiv.style.display = "none";
+    gameGrid.innerHTML = '';
+    playerOneNameInput.value = '';
+    playerTwoNameInput.value = '';
+    playerOneNameButton.disabled = false;
+    playerTwoNameButton.disabled = false;
+    playerOneNameInput.disabled = false;
+    playerTwoNameInput.disabled = false;
+    difficultySelection.value = "easy";
+    gridSizeSelection.value = "3";
+    startGameButton.disabled = true;
+    gameScreen.style.display = "none";
+    secondScreen.style.display = "none";
+    firstScreen.style.display = "flex";
+});
+
+resetSameOptionsButton.addEventListener("click", () => {
+    resetOptionsDiv.style.display = "none";
+    state.currentTurn === state.players[1].name ? switchPlayers() : gameStatusDisplay.innerText = `It's ${state.currentTurn}'s turn!`;
+    for (let i = 0; i < gameGrid.children.length; i++) {
+        for (let j = 0; j < gameGrid.children[i].children.length; j++) {
+            currCell = gameGrid.children[i].children[j];
+            currCell.innerText = '';
+            currCell.style.fontWeight = "normal";
+            currCell.style.color = "black";
+        };
+    };
+    state.totalMoves = 0;
+    state.gameOver = 0;
+    resetBoard();
+});
+
 // HELPER FUNCTIONS
 const switchToSecondScreen = () => {
     firstScreen.style.display = "none";
@@ -205,6 +224,7 @@ const triggerWin = (arr) => {
         currChild.style.fontWeight = "bold";
         currChild.style.color = "red";
     };
+    resetOptionsDiv.style.display = "flex";
 };
 
 const isBoardFull = () => {
@@ -213,6 +233,7 @@ const isBoardFull = () => {
         gameStatusDisplay.innerText = `Game over! No one wins!`;
         playerInfoDivs[0].classList.remove("current_turn_display");
         playerInfoDivs[1].classList.remove("current_turn_display");
+        resetOptionsDiv.style.display = "flex";
         return true;
     };
     return false;
@@ -223,15 +244,20 @@ const isBoardFull = () => {
 const createGrid = () => {
     for (let i = 0; i < state.gridSize; i++) {
         const newRow = document.createElement("tr");
-        const newRowArr = [];
         for (let i = 0; i < state.gridSize; i++) {
             const newCell = document.createElement("td");
             newRow.appendChild(newCell);
-            newRowArr.push(null);
         };
         gameGrid.appendChild(newRow);
-        state.board.push(newRowArr);
     };
+    const cells = document.getElementsByTagName("td");
+    for (let i = 0; i < cells.length; i++) {
+        const size = 400/(cells.length/state.gridSize);
+        cells[i].style.width = `${size}px`;
+        cells[i].style.height = `${size}px`;
+        cells[i].style.fontSize = `${size * .5}px`;
+    };
+    resetBoard();
 };
 
 const createWinningLinesArrays = () => {
@@ -251,6 +277,39 @@ const createWinningLinesArrays = () => {
     };
     state.winningLines.push(leftToRight);
     state.winningLines.push(rightToLeft);
+};
+
+const resetState = () => {
+    state.players = [
+        {
+            name: "",
+            onTurn: true,
+        },
+        {
+            name: "",
+            onTurn: false,
+            isHuman: false,
+            difficulty: "easy"
+        }
+    ];
+    state.gridSize = 3;
+    state.board = [];
+    state.winningLines = [];
+    state.currentTurn = '';
+    state.activeLetter = 'X';
+    state.totalMoves = 0;
+    state.gameOver = false;
+};
+
+const resetBoard = () => {
+    state.board = [];
+    for (let i = 0; i < state.gridSize; i++) {
+        const newRowArr = [];
+        for (let i = 0; i < state.gridSize; i++) {
+            newRowArr.push(null);
+        };
+        state.board.push(newRowArr);
+    };
 };
 
 // --- COMPUTER OPPONENT AI ---
@@ -386,3 +445,5 @@ const makeMove = (coord) => {
         switchPlayers();
     };
 };
+
+resetState();
