@@ -305,28 +305,29 @@ const resetBoard = () => {
 
 const computerTurn = () => {
     const possibleMoves = getAllPossibleMoves();
-    const winningMove = getWinningMove(possibleMoves);
-    if (winningMove !== null) {
-        makeMove(winningMove);
-        return;
-    };
-    if (state.players[1].difficulty !== "easy") {
-        const blockingMove = getBlockingMove(possibleMoves);
-        if (blockingMove !== null) {
-            makeMove(blockingMove);
+    getMoveWeights(possibleMoves);
+
+    for (let i = 0; i < possibleMoves.length; i++) {
+        if (possibleMoves[i][2] === 3) {
+            console.log("making a winning move");
+            makeMove(possibleMoves[i]);
             return;
         };
-        if (state.players[1].difficulty === "hard") {
-            const goodMoves = getGoodMoves(possibleMoves);
-            if (goodMoves.length > 0) {
-                makeMove(getRandomMove(goodMoves));
-                return;
-            };
+        if (state.players[1].difficulty !== "easy" && possibleMoves[i][2] === 2) {
+            console.log("making a blocking move");
+            makeMove(possibleMoves[i]);
+            return;
         };
     };
+
+    const goodMoves = possibleMoves.filter(move => move[2] === 1);
+    if ( state.players[1].difficulty === "hard" && goodMoves.length > 0) {
+        console.log("making a good move");
+        makeMove(getRandomMove(goodMoves));
+        return;
+    };
+    console.log("making a random move");
     makeMove(getRandomMove(possibleMoves));
-
-
 };
 
 const getAllPossibleMoves = () => {
@@ -334,82 +335,44 @@ const getAllPossibleMoves = () => {
     for (let i = 0; i < state.board.length; i++) {
         for(let j = 0; j < state.board[i].length; j++) {
             if (state.board[i][j] === null) {
-                moves.push([i, j]);
+                moves.push([i, j, 0]);
             };
         };
     };
     return moves;
-
 };
 
-const getWinningMove = (moves) => {
+const getMoveWeights = (moves) => {
     for (let i = 0; i < moves.length; i++) {
         for (let j = 0; j < state.winningLines.length; j++) {
-            if (isInLine(moves[i], state.winningLines[j]) && doesMoveWin(moves[i], state.winningLines[j])) {
-                return moves[i];
+            if (isInLine(moves[i], state.winningLines[j])) {
+                const currWeight = determineWeight(moves[i], state.winningLines[j]);
+                if (currWeight > moves[i][2]) {
+                    moves[i][2] = currWeight;
+                };
             };
         };
     };
-    return null;
 };
 
-const doesMoveWin = (coord, lineArr) => {
+const determineWeight = (coord, lineArr) => {
+    const allOtherValues = new Set();
     for (let i = 0; i < lineArr.length; i++) {
-        if (coord[0] === lineArr[i][0] && coord[1] === lineArr[i][1]) {
+        if (lineArr[i][0] === coord[0] && lineArr[i][1] === coord[1]) {
             continue;
         };
-        if (state.board[lineArr[i][0]][lineArr[i][1]] !== 'O') {
-            return false;
-        };
+        allOtherValues.add(state.board[lineArr[i][0]][lineArr[i][1]]);
     };
-    return true;
-};
-
-const getBlockingMove = (moves) => {
-    for (let i = 0; i < moves.length; i++) {
-        for (let j = 0; j < state.winningLines.length; j++) {
-            if (isInLine(moves[i], state.winningLines[j]) && doesMoveBlock(moves[i], state.winningLines[j])) {
-                return moves[i];
-            };
+    if (allOtherValues.size === 1) {
+        if (allOtherValues.has('O')) {
+            return 3;
+        } else if (allOtherValues.has('X')) {
+            return 2;
         };
+    } else if (!allOtherValues.has('X') && allOtherValues.has(null)) {
+        return 1;
     };
-    return null;
-};
-
-const doesMoveBlock = (coord, lineArr) => {
-    for (let i = 0; i < lineArr.length; i++) {
-        if (coord[0] === lineArr[i][0] && coord[1] === lineArr[i][1]) {
-            continue;
-        };
-        if (state.board[lineArr[i][0]][lineArr[i][1]] !== 'X') {
-            return false;
-        };
-    };
-    return true;
-};
-
-const getGoodMoves = (moves) => {
-    const goodMoves = [];
-    for (let i = 0; i < moves.length; i++) {
-        for (let j = 0; j < state.winningLines.length; j++) {
-            if (isInLine(moves[i], state.winningLines[j]) && isMoveGood(state.winningLines[j])) {
-                goodMoves.push(moves[i]);
-            };
-        };
-    };
-    return goodMoves;
-};
-
-const isMoveGood = (lineArr) => {
-    for (let i = 0; i < lineArr.length; i++) {
-        currResult = state.board[lineArr[i][0]][lineArr[i][1]];
-        if (currResult === 'X') {
-            return false;
-        } else if (currResult !== null) {
-            return true;
-        };
-    };
-    return false;
+    return 0;
 };
 
 const isInLine = (coord, lineArr) => {
