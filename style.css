@@ -12,9 +12,6 @@ header {
     width: 100vw;
     height: 70px;
     text-align: center;
-    /* display: flex;
-    justify-content: center;
-    align-items: center; */
     background-color: #2b4353;
 }
 
@@ -39,11 +36,8 @@ button {
 }
 
 td {
-    /* width: 100px;
-    height: 100px; */
     background-color: lightgray;
     text-align: center;
-    /* font-size: 3em; */
 }
 
 .game_options_columns, .game_display {

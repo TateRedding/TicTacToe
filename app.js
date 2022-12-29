@@ -309,12 +309,10 @@ const computerTurn = () => {
 
     for (let i = 0; i < possibleMoves.length; i++) {
         if (possibleMoves[i][2] === 3) {
-            console.log("making a winning move");
             makeMove(possibleMoves[i]);
             return;
         };
         if (state.players[1].difficulty !== "easy" && possibleMoves[i][2] === 2) {
-            console.log("making a blocking move");
             makeMove(possibleMoves[i]);
             return;
         };
@@ -322,11 +320,9 @@ const computerTurn = () => {
 
     const goodMoves = possibleMoves.filter(move => move[2] === 1);
     if ( state.players[1].difficulty === "hard" && goodMoves.length > 0) {
-        console.log("making a good move");
         makeMove(getRandomMove(goodMoves));
         return;
     };
-    console.log("making a random move");
     makeMove(getRandomMove(possibleMoves));
 };
 
