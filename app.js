@@ -18,15 +18,9 @@ const customGridButton = document.getElementById("custom_grid_button");
 
 const gameStatusDisplay = document.getElementById("game_status");
 
-// Can any of these be combined via class name?
-
-const playerOneNameInput = document.getElementById("player_one_name_input");
-const playerOneNameButton = document.getElementById("player_one_name_button");
-const playerOneNameDisplay = document.getElementById("player_one_name");
-
-const playerTwoNameInput = document.getElementById("player_two_name_input");
-const playerTwoNameButton = document.getElementById("player_two_name_button");
-const playerTwoNameDisplay = document.getElementById("player_two_name");
+const playerNameInputs = document.getElementsByClassName("player_name_input");
+const playerNameButtons = document.getElementsByClassName("player_name_button");
+const playerNameDisplays = document.getElementsByClassName("player_name");
 
 const playerInfoDivs = document.getElementsByClassName("player_info");
 
@@ -36,7 +30,6 @@ const gridSizeSelection = document.getElementById("grid_size_selection");
 const gameGrid = document.getElementById("game_grid");
 
 const resetOptionsDiv = document.getElementById("reset_options");
-// need functionality
 const resetSameOptionsButton = document.getElementById("reset_same_options");
 const fullResetButton = document.getElementById("full_reset");
 
@@ -45,6 +38,7 @@ const fullResetButton = document.getElementById("full_reset");
 // --- SETTING UP THE GAME ---
 vsHumanButton.addEventListener("click", () => {
     switchToSecondScreen();
+    playerTwoColumn.style.display = "flex";
     computerColumn.style.display = "none";
     state.players[1].isHuman = true;
 });
@@ -52,29 +46,24 @@ vsHumanButton.addEventListener("click", () => {
 vsComputerButton.addEventListener("click", () => {
     switchToSecondScreen();
     playerTwoColumn.style.display = "none";
+    computerColumn.style.display = "flex";
     state.players[1].name = "Computer";
 });
 
-playerOneNameButton.addEventListener("click", () => {
-    if (!playerOneNameInput.value) {
-        return;
-    };
-    state.players[0].name = playerOneNameInput.value;
-    playerOneNameButton.disabled = true;
-    playerOneNameInput.disabled = true;
-    state.currentTurn = state.players[0].name;
-    enableStartButtonIfReady();
-});
-
-playerTwoNameButton.addEventListener("click", () => {
-    if (!playerTwoNameInput.value) {
-        return;
-    };
-    state.players[1].name = playerTwoNameInput.value;
-    playerTwoNameButton.disabled = true;
-    playerTwoNameInput.disabled = true;
-    enableStartButtonIfReady();
-});
+for (let i = 0; i < playerNameButtons.length; i++) {
+    playerNameButtons[i].addEventListener("click", () => {
+        if (!playerNameInputs[i].value) {
+            return;
+        };
+        state.players[i].name = playerNameInputs[i].value;
+        playerNameButtons[i].disabled = true;
+        playerNameInputs[i].disabled = true;
+        enableStartButtonIfReady();
+        if (i === 0) {
+            state.currentTurn = state.players[i].name;
+        };
+    });
+};
 
 difficultySelection.addEventListener("change", (event) => {
     state.players[1].difficulty = event.target.value;
@@ -108,10 +97,11 @@ startGameButton.addEventListener("click", () => {
     createGrid();
     createWinningLinesArrays();
     secondScreen.style.display = "none";
-    playerOneNameDisplay.innerText = state.players[0].name;
-    playerTwoNameDisplay.innerText = state.players[1].name;
     gameStatusDisplay.innerText = `It's ${state.currentTurn}'s turn!`;
     gameScreen.style.display = "flex";
+    for (let i = 0; i < playerNameDisplays.length; i++) {
+        playerNameDisplays[i].innerText = state.players[i].name;
+    };
 });
 
 // --- PLAYING THE GAME ---
@@ -137,18 +127,17 @@ fullResetButton.addEventListener("click", () => {
     resetState();
     resetOptionsDiv.style.display = "none";
     gameGrid.innerHTML = '';
-    playerOneNameInput.value = '';
-    playerTwoNameInput.value = '';
-    playerOneNameButton.disabled = false;
-    playerTwoNameButton.disabled = false;
-    playerOneNameInput.disabled = false;
-    playerTwoNameInput.disabled = false;
     difficultySelection.value = "easy";
     gridSizeSelection.value = "3";
     startGameButton.disabled = true;
     gameScreen.style.display = "none";
     secondScreen.style.display = "none";
     firstScreen.style.display = "flex";
+    for (let i = 0; i < playerNameInputs.length; i++) {
+        playerNameInputs[i].value = '';
+        playerNameInputs[i].disabled = false;
+        playerNameButtons[i].disabled = false;
+    };
 });
 
 resetSameOptionsButton.addEventListener("click", () => {
