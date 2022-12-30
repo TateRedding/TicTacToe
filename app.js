@@ -29,7 +29,6 @@ const gridSizeSelection = document.getElementById("grid_size_selection");
 
 const gameGrid = document.getElementById("game_grid");
 
-const resetOptionsDiv = document.getElementById("reset_options");
 const resetSameOptionsButton = document.getElementById("reset_same_options");
 const fullResetButton = document.getElementById("full_reset");
 
@@ -84,10 +83,9 @@ customGridButton.addEventListener("click", () => {
     if (!customGridInput.value) {
         return;
     } else if (customGridInput.value > 9) {
-        state.gridSize = 9;
-    } else {
-        state.gridSize = customGridInput.value;
-    };
+        customGridInput.value = 9;
+    }
+    state.gridSize = customGridInput.value;
     customGridInput.disabled = true;
     customGridButton.disabled = true;
     enableStartButtonIfReady();
@@ -127,7 +125,6 @@ gameGrid.addEventListener("click", (event) => {
 
 fullResetButton.addEventListener("click", () => {
     resetState();
-    resetOptionsDiv.style.visibility = "hidden";
     gameGrid.innerHTML = '';
     difficultySelection.value = "easy";
     gridSizeSelection.value = "3";
@@ -135,6 +132,10 @@ fullResetButton.addEventListener("click", () => {
     gameScreen.style.display = "none";
     secondScreen.style.display = "none";
     firstScreen.style.display = "flex";
+    customGridInput.value = '';
+    customGridInput.disabled = false;
+    customGridButton.disabled = false;
+    customGridDiv.style.visibility = "hidden";
     for (let i = 0; i < playerNameInputs.length; i++) {
         playerNameInputs[i].value = '';
         playerNameInputs[i].disabled = false;
@@ -143,7 +144,6 @@ fullResetButton.addEventListener("click", () => {
 });
 
 resetSameOptionsButton.addEventListener("click", () => {
-    resetOptionsDiv.style.visibility = "hidden";
     state.currentTurn === state.players[1].name ? switchPlayers() : gameStatusDisplay.innerText = `It's ${state.currentTurn}'s turn!`;
     for (let i = 0; i < gameGrid.children.length; i++) {
         for (let j = 0; j < gameGrid.children[i].children.length; j++) {
@@ -212,7 +212,6 @@ const triggerWin = (arr) => {
         currChild.style.fontWeight = "bold";
         currChild.style.color = "red";
     };
-    resetOptionsDiv.style.visibility = "visible";
 };
 
 const isBoardFull = () => {
@@ -221,7 +220,6 @@ const isBoardFull = () => {
         gameStatusDisplay.innerText = `Game over! No one wins!`;
         playerInfoDivs[0].classList.remove("current_turn_display");
         playerInfoDivs[1].classList.remove("current_turn_display");
-        resetOptionsDiv.style.visibility = "visible";
         return true;
     };
     return false;

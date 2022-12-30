@@ -91,8 +91,7 @@ td {
     margin: 0 2em;
 }
 
-#reset_options {
-    visibility: hidden;
+.reset_options {
     display: flex;
     width: 100%;
     justify-content: space-evenly;
