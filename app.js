@@ -12,7 +12,7 @@ const vsHumanButton = document.getElementById("vs_human");
 const vsComputerButton = document.getElementById("vs_computer");
 const startGameButton = document.getElementById("start_game");
 
-const customGridDiv = document.getElementById("custom_grid_div");
+const customGridDiv = document.getElementById("custom_grid");
 const customGridInput = document.getElementById("custom_grid_input");
 const customGridButton = document.getElementById("custom_grid_button");
 
@@ -123,9 +123,11 @@ gameGrid.addEventListener("click", (event) => {
     };
 });
 
+// --- RESETTING THE GAME ---
+
 fullResetButton.addEventListener("click", () => {
     resetState();
-    resetOptionsDiv.style.display = "none";
+    resetOptionsDiv.style.visibility = "hidden";
     gameGrid.innerHTML = '';
     difficultySelection.value = "easy";
     gridSizeSelection.value = "3";
@@ -141,7 +143,7 @@ fullResetButton.addEventListener("click", () => {
 });
 
 resetSameOptionsButton.addEventListener("click", () => {
-    resetOptionsDiv.style.display = "none";
+    resetOptionsDiv.style.visibility = "hidden";
     state.currentTurn === state.players[1].name ? switchPlayers() : gameStatusDisplay.innerText = `It's ${state.currentTurn}'s turn!`;
     for (let i = 0; i < gameGrid.children.length; i++) {
         for (let j = 0; j < gameGrid.children[i].children.length; j++) {
@@ -152,7 +154,7 @@ resetSameOptionsButton.addEventListener("click", () => {
         };
     };
     state.totalMoves = 0;
-    state.gameOver = 0;
+    state.gameOver = false;
     resetBoard();
 });
 
@@ -192,17 +194,14 @@ const isGameWon = () => {
 };
 
 const isAllTheSame = (arr) => {
-    const first = state.board[arr[0][0]][arr[0][1]];
-    if (first === null) {
-        return false;
+    const lineSet = new Set();
+    for (let i = 0; i < arr.length; i++) {
+        lineSet.add(state.board[arr[i][0]][arr[i][1]])
     };
-    for (let i = 1; i < arr.length; i++) {
-        currResult = state.board[arr[i][0]][arr[i][1]];
-        if (currResult === null || currResult !== first) {
-            return false;
-        };
-    };
-    return true;
+     if (lineSet.size === 1 && !lineSet.has(null)) {
+        return true;
+     }
+     return false;
 };
 
 const triggerWin = (arr) => {
@@ -213,7 +212,7 @@ const triggerWin = (arr) => {
         currChild.style.fontWeight = "bold";
         currChild.style.color = "red";
     };
-    resetOptionsDiv.style.display = "flex";
+    resetOptionsDiv.style.visibility = "visible";
 };
 
 const isBoardFull = () => {
@@ -222,7 +221,7 @@ const isBoardFull = () => {
         gameStatusDisplay.innerText = `Game over! No one wins!`;
         playerInfoDivs[0].classList.remove("current_turn_display");
         playerInfoDivs[1].classList.remove("current_turn_display");
-        resetOptionsDiv.style.display = "flex";
+        resetOptionsDiv.style.visibility = "visible";
         return true;
     };
     return false;
@@ -305,7 +304,6 @@ const resetBoard = () => {
 
 const computerTurn = () => {
     const possibleMoves = getAllPossibleMoves();
-    getMoveWeights(possibleMoves);
 
     for (let i = 0; i < possibleMoves.length; i++) {
         if (possibleMoves[i][2] === 3) {
@@ -335,10 +333,11 @@ const getAllPossibleMoves = () => {
             };
         };
     };
+    assignMoveWeights(moves);
     return moves;
 };
 
-const getMoveWeights = (moves) => {
+const assignMoveWeights = (moves) => {
     for (let i = 0; i < moves.length; i++) {
         for (let j = 0; j < state.winningLines.length; j++) {
             if (isInLine(moves[i], state.winningLines[j])) {
